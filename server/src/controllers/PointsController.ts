@@ -4,6 +4,7 @@ import knex from "../database/connection";
 class PointsController {
   async index(request: Request, response: Response) {
     const { city, uf, items } = request.query;
+    const { host } = request.headers;
 
     const parsedItems = String(items)
       .split(",")
@@ -19,8 +20,8 @@ class PointsController {
 
     const serializedPoints = points.map((point) => {
       return {
-        ...points,
-        image_url: `http://192.168.1.149:3333/uploads/${point.image}`,
+        ...point,
+        image_url: `http://${host}/uploads/${point.image}`,
       };
     });
 
@@ -29,6 +30,7 @@ class PointsController {
 
   async show(request: Request, response: Response) {
     const { id } = request.params;
+    const { host } = request.headers;
 
     const point = await knex("points").where("id", id).first();
 
@@ -38,7 +40,7 @@ class PointsController {
 
     const serializedPoint = {
       ...point,
-      image_url: `http://192.168.1.149:3333/uploads/${point.image}`,
+      image_url: `http://${host}/uploads/${point.image}`,
     };
 
     const items = await knex("items")
